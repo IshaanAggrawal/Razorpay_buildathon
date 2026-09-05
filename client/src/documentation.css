@@ -1,0 +1,45 @@
+.docs-button { border-color: #7e9b85; color: #173f2a; }
+.docs-backdrop { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 24px; background: rgba(15, 29, 21, .42); }
+.docs-modal { width: min(1080px, 100%); max-height: min(840px, 92vh); overflow: hidden; background: #f8faf6; border: 1px solid #cbd8ca; border-radius: 8px; box-shadow: 0 24px 80px rgba(16, 35, 23, .25); }
+.docs-header { display: flex; justify-content: space-between; gap: 20px; align-items: start; padding: 28px 32px 24px; border-bottom: 1px solid #d9e2d7; background: #eef4eb; }
+.docs-header h2 { font-size: clamp(22px, 3vw, 34px); margin: 8px 0; }
+.docs-lead { color: #667269; margin: 0; }
+.docs-close { background: #173f2a; color: white; border-color: #173f2a; }
+.docs-content { display: grid; grid-template-columns: 180px 1fr; max-height: calc(min(840px, 92vh) - 145px); overflow: hidden; }
+.docs-nav { padding: 24px 18px; border-right: 1px solid #d9e2d7; background: #f1f5ef; }
+.docs-nav a { display: block; padding: 8px 0; color: #55715c; text-decoration: none; font: 600 11px Manrope; }
+.docs-nav a:hover { color: #173f2a; }
+.docs-article { overflow: auto; padding: 8px 34px 36px; }
+.doc-section { padding: 24px 0; border-bottom: 1px solid #e0e7df; scroll-margin-top: 10px; }
+.doc-section:last-child { border-bottom: 0; }
+.doc-section h3 { margin: 0 0 12px; color: #173f2a; font-size: 19px; }
+.doc-section p { color: #536158; font-size: 13px; line-height: 1.7; }
+.doc-section code, .api-list code { color: #286244; font-family: 'DM Mono'; font-size: 11px; }
+.code-block { padding: 14px 16px; overflow-x: auto; background: #17251b; color: #dcefe0; border-radius: 4px; font: 11px 'DM Mono'; line-height: 1.7; }
+.flow-list { display: grid; gap: 10px; }
+.flow-step { display: grid; grid-template-columns: 42px 1fr; gap: 12px; padding: 12px; background: #eef4eb; border-left: 3px solid #6f9a76; }
+.flow-step b { color: #39714a; font: 500 12px 'DM Mono'; }
+.flow-step strong, .flow-step span { display: block; }
+.flow-step strong { margin-bottom: 3px; font-size: 13px; }
+.flow-step span, .info-row span { color: #667269; font-size: 12px; line-height: 1.5; }
+.info-row { display: grid; grid-template-columns: 145px 1fr; gap: 16px; padding: 10px 0; border-bottom: 1px solid #e3e9e1; }
+.info-row:last-child { border-bottom: 0; }
+.info-row strong { font-size: 12px; }
+.action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 16px 0; }
+.action-grid span { padding: 10px; background: #e6f1e6; color: #286244; border-radius: 3px; font: 500 11px 'DM Mono'; }
+.api-list { display: grid; grid-template-columns: 250px 1fr; gap: 0; }
+.api-list > * { padding: 9px 0; border-bottom: 1px solid #e3e9e1; }
+.api-list span { color: #667269; font-size: 12px; }
+.add-invoice { margin-bottom: 18px; }
+.invoice-form { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-items: end; }
+.invoice-form label { margin: 0; }
+.invoice-form input:not([type="checkbox"]) { display: block; width: 100%; margin-top: 6px; padding: 10px; border: 1px solid #cbd7c9; border-radius: 3px; background: white; font: 13px Manrope; }
+.check-label { display: flex; align-items: center; gap: 7px; font-size: 12px; }
+.check-label input { width: 15px; height: 15px; }
+.nav-button { display: inline-flex; align-items: center; min-height: 42px; text-decoration: none; }
+.upload-button { display: inline-flex; align-items: center; }
+.docs-route .docs-backdrop { position: static; min-height: 100vh; padding: 0; display: block; background: transparent; }
+.docs-route .docs-modal { width: 100%; max-height: none; min-height: 100vh; border: 0; border-radius: 0; box-shadow: none; }
+.docs-route .docs-content { max-height: none; min-height: calc(100vh - 145px); }
+@media (max-width: 700px) { .docs-backdrop { padding: 8px; } .docs-content { grid-template-columns: 1fr; } .docs-nav { display: flex; gap: 14px; overflow-x: auto; border-right: 0; border-bottom: 1px solid #d9e2d7; padding: 10px 18px; } .docs-nav a { white-space: nowrap; } .docs-article { padding: 4px 20px 24px; } .docs-header { padding: 20px; } .info-row, .api-list { grid-template-columns: 1fr; gap: 4px; } }
+@media (max-width: 800px) { .invoice-form { grid-template-columns: repeat(2, 1fr); } }

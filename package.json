@@ -1,0 +1,16 @@
+{
+  "name": "ai-revenue-recovery",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test server/tests/*.test.js",
+    "generate:data": "node server/data/generate.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

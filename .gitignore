@@ -1,0 +1,4 @@
+node_modules/
+server/recovery.sqlite
+.env
+client/dist/

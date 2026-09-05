@@ -215,6 +215,14 @@ docker compose up --build
 Open `http://localhost:5000`. The built React dashboard and Express API share the same port.
 SQLite is stored in the Docker `recovery-data` volume, so imported invoices and audit data survive container restarts. Use **Reset demo** when you want a clean rehearsal.
 
+To use Neon with Docker instead of the local SQLite volume, add your private connection string to `.env` before starting Compose:
+
+```env
+DATABASE_URL=postgresql://...
+```
+
+When `DATABASE_URL` is present, the application selects Neon automatically. Do not put the real connection string in `docker-compose.yml`, `.env.example`, or Git.
+
 ### Option B: Local Node.js
 
 Prerequisite: Node.js 20 or newer.

@@ -39,13 +39,13 @@ async function parsePromiseDateWithModel(text, today = new Date()) {
   }
 }
 
-function expirePromise(id, today) {
+async function expirePromise(id, today) {
   const { statements } = require('../db');
-  const promise = statements.promise.get(id);
+  const promise = await statements.promise.get(id);
   if (!promise) return null;
   if (promise.status === 'pending' && promise.promised_date && promise.promised_date < today) {
-    statements.updatePromise.run('broken', id);
-    statements.insertAudit.run(promise.invoice_id, 'system', 'escalate_to_manager', `Promise ${id} expired on ${promise.promised_date}; customer payment was not recorded.`);
+    await statements.updatePromise.run('broken', id);
+    await statements.insertAudit.run(promise.invoice_id, 'system', 'escalate_to_manager', `Promise ${id} expired on ${promise.promised_date}; customer payment was not recorded.`);
   }
   return statements.promise.get(id);
 }

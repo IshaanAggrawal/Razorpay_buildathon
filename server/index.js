@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('node:path');
-require('./db');
+const storage = require('./db');
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -11,7 +11,7 @@ app.use((req, res, next) => {
 	res.on('finish', () => console.log(`[http] ${req.method} ${req.originalUrl} -> ${res.statusCode} (${Date.now() - startedAt}ms)`));
 	next();
 });
-app.get(['/api/health', '/health'], (req, res) => res.json({ ok: true, storage: process.env.VERCEL ? 'temporary:/tmp' : 'local:sqlite' }));
+app.get(['/api/health', '/health'], async (req, res, next) => { try { await storage.ready; res.json({ ok: true, storage: storage.isNeon ? 'neon' : 'local:sqlite' }); } catch (error) { next(error); } });
 app.use(['/api/invoices', '/invoices'], require('./routes/invoices'));
 app.use(['/api/recover', '/recover'], require('./routes/recover'));
 app.use(['/api/promises', '/promises'], require('./routes/promises'));

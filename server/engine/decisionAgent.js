@@ -20,9 +20,15 @@ function mockDecision(invoice) {
 
 async function decide(invoice) {
   if (!process.env.GROQ_API_KEY) return mockDecision(invoice);
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.GROQ_API_KEY}` }, body: JSON.stringify({ model: process.env.DECISION_MODEL || 'llama-3.1-8b-instant', temperature: 0, response_format: { type: 'json_object' }, messages: [{ role: 'system', content: DECISION_SYSTEM_PROMPT }, { role: 'user', content: JSON.stringify(invoice) }] }) });
-  const payload = await response.json();
-  return JSON.parse(payload.choices[0].message.content);
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.GROQ_API_KEY}` }, body: JSON.stringify({ model: process.env.DECISION_MODEL || 'llama-3.1-8b-instant', temperature: 0, response_format: { type: 'json_object' }, messages: [{ role: 'system', content: DECISION_SYSTEM_PROMPT }, { role: 'user', content: JSON.stringify(invoice) }] }) });
+    const payload = await response.json();
+    const content = payload?.choices?.[0]?.message?.content;
+    if (!response.ok || !content) return mockDecision(invoice);
+    return JSON.parse(content);
+  } catch {
+    return mockDecision(invoice);
+  }
 }
 
 module.exports = { DECISION_SYSTEM_PROMPT, decide, ALLOWED_ACTIONS };

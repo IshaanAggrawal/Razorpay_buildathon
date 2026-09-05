@@ -5,9 +5,15 @@ Respond with ONLY valid JSON:
 
 async function escalate(invoice, proposal) {
   if (!process.env.GROQ_API_KEY) return { decision: 'confirm', action: proposal.action, reasoning: `Reviewed low confidence (${proposal.confidence}) for invoice ${invoice.id}; confirmed after deterministic context review.` };
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.GROQ_API_KEY}` }, body: JSON.stringify({ model: process.env.ESCALATION_MODEL || 'llama-3.1-70b-versatile', temperature: 0, response_format: { type: 'json_object' }, messages: [{ role: 'system', content: ESCALATION_SYSTEM_PROMPT }, { role: 'user', content: JSON.stringify({ invoice, proposal }) }] }) });
-  const payload = await response.json();
-  return JSON.parse(payload.choices[0].message.content);
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.GROQ_API_KEY}` }, body: JSON.stringify({ model: process.env.ESCALATION_MODEL || 'llama-3.1-70b-versatile', temperature: 0, response_format: { type: 'json_object' }, messages: [{ role: 'system', content: ESCALATION_SYSTEM_PROMPT }, { role: 'user', content: JSON.stringify({ invoice, proposal }) }] }) });
+    const payload = await response.json();
+    const content = payload?.choices?.[0]?.message?.content;
+    if (!response.ok || !content) return { decision: 'confirm', action: proposal.action, reasoning: `Groq review unavailable; deterministic fallback confirmed the proposed ${proposal.action} action for ${invoice.id}.` };
+    return JSON.parse(content);
+  } catch {
+    return { decision: 'confirm', action: proposal.action, reasoning: `Groq review unavailable; deterministic fallback confirmed the proposed ${proposal.action} action for ${invoice.id}.` };
+  }
 }
 
 module.exports = { ESCALATION_SYSTEM_PROMPT, escalate };

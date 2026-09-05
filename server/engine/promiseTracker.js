@@ -14,21 +14,28 @@ function parsePromiseDate(text, today = new Date()) {
 
 async function parsePromiseDateWithModel(text, today = new Date()) {
   if (!process.env.GROQ_API_KEY) return parsePromiseDate(text, today);
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
-    body: JSON.stringify({
-      model: process.env.PROMISE_MODEL || 'llama-3.1-8b-instant',
-      temperature: 0,
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: PROMISE_SYSTEM_PROMPT.replace('{today}', today.toISOString().slice(0, 10)) },
-        { role: 'user', content: text }
-      ]
-    })
-  });
-  const payload = await response.json();
-  return JSON.parse(payload.choices[0].message.content);
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
+      body: JSON.stringify({
+        model: process.env.PROMISE_MODEL || 'llama-3.1-8b-instant',
+        temperature: 0,
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: PROMISE_SYSTEM_PROMPT.replace('{today}', today.toISOString().slice(0, 10)) },
+          { role: 'user', content: text }
+        ]
+      })
+    });
+    const payload = await response.json();
+    const content = payload?.choices?.[0]?.message?.content;
+    if (!response.ok || !content) return parsePromiseDate(text, today);
+    const parsed = JSON.parse(content);
+    return typeof parsed.date === 'string' && typeof parsed.confidence === 'number' ? parsed : parsePromiseDate(text, today);
+  } catch {
+    return parsePromiseDate(text, today);
+  }
 }
 
 function expirePromise(id, today) {

@@ -4,7 +4,7 @@
   "installCommand": "npm install && npm --prefix client install",
   "outputDirectory": "client/dist",
   "functions": {
-    "api/**/*.js": {
+    "api/[...path].js": {
       "includeFiles": "server/**"
     }
   },

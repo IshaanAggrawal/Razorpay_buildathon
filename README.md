@@ -237,7 +237,7 @@ The development dashboard runs at `http://localhost:5173` and proxies API calls 
 
 ### Option C: One-project Vercel deployment
 
-This repository includes `vercel.json` and `api/index.js`, so Vercel can deploy the React dashboard and Express API from one GitHub repository.
+This repository includes `vercel.json` and `api/[...path].js`, so Vercel can deploy the React dashboard and Express API from one GitHub repository.
 
 1. Push the latest `main` branch to GitHub.
 2. Open [Vercel](https://vercel.com/new) and select **Add New Project**.
@@ -259,7 +259,7 @@ The dashboard calls `/api/...` on the same Vercel domain, so no frontend API URL
 
 #### Vercel limitation for this MVP
 
-Vercel functions do not provide durable local disk storage. The SQLite file may reset between deployments or function instances, so this deployment is suitable for a visual/demo preview, not persistent production data. For a reliable hosted demo, keep the same API contract but replace `better-sqlite3` with a hosted SQLite-compatible database such as Turso, or use the included Docker deployment locally. Never commit `.env` or a real API key.
+Vercel functions do not provide durable local disk storage or guaranteed process memory across instances. On Vercel, this MVP uses a lightweight in-memory adapter so the function can boot without native SQLite; data is temporary and may reset. For persistent hosted data, keep the API contract but replace the adapter with a hosted SQLite-compatible database such as Turso. Use the included Docker deployment locally for durable SQLite demo data. Never commit `.env` or a real API key.
 
 ## Demo Script
 

@@ -1,3 +1,6 @@
+if (process.env.VERCEL) {
+  module.exports = require('./db-memory');
+} else {
 const Database = require('better-sqlite3');
 const path = require('node:path');
 
@@ -42,3 +45,4 @@ function reset() {
 }
 
 module.exports = { db, statements, reset };
+}

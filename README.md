@@ -60,7 +60,7 @@ graph TD
 
 ## User Flow
 
-1. **Reset:** clear the SQLite demo state.
+1. **Reset:** clear the active database demo state.
 2. **Import:** click **Load sample** for the built-in dataset or **Upload CSV** to choose your own compatible CSV.
 3. **Score:** calculate each invoice's bucket and risk score.
 4. **Gate:** stop DNC, low-value, max-contact, paid, disputed, and written-off records.
@@ -213,7 +213,7 @@ docker compose up --build
 ```
 
 Open `http://localhost:5000`. The built React dashboard and Express API share the same port.
-SQLite is stored in the Docker `recovery-data` volume, so imported invoices and audit data survive container restarts. Use **Reset demo** when you want a clean rehearsal.
+Without `DATABASE_URL`, SQLite is stored in `.data/recovery.sqlite`, so imported invoices and audit data survive container restarts. When `DATABASE_URL` is present, Docker uses Neon instead. Use **Reset demo** when you want a clean rehearsal.
 
 To use Neon with Docker instead of the local SQLite volume, add your private connection string to `.env` before starting Compose:
 
@@ -302,15 +302,17 @@ During the first deterministic test pass, the expected risk score was written as
 
 The first end-to-end batch also exposed a functional gap: metrics already calculated `amountRecovered` and `recoveryRate` from invoices with `status = 'paid'`, but no route or UI action could ever move an open invoice into that state. Recovery was therefore permanently reported as 0%. We added the demo-only `POST /api/invoices/:id/mark-paid` flow, audit logging, a per-row **Mark paid** button, and a regression test proving that paid amounts and recovery rate update while disputed or already-paid invoices are rejected.
 
+The first Vercel deployment also exposed a storage mismatch: native SQLite could not open its file in the serverless filesystem, and separate API functions could not share local state. The deployment now uses one `/api/index.js` function and Neon when `DATABASE_URL` is configured; local and Docker runs retain the SQLite fallback. A stale Neon endpoint was also caught by the health/startup check before data import, making the connection string itself the next thing to rotate or refresh rather than silently losing writes.
+
 ## Tech Stack
 
-**Backend:** Node.js, Express, better-sqlite3, native `fetch`
+**Backend:** Node.js, Express, better-sqlite3 for local fallback, `pg` for Neon PostgreSQL, native `fetch`
 
 **Frontend:** React, Vite, responsive CSS
 
 **AI:** Groq OpenAI-compatible chat completions with JSON response mode
 
-**Data:** SQLite, generated CSV fixtures, append-only audit records
+**Data:** Neon PostgreSQL or SQLite fallback, generated CSV fixtures, append-only audit records
 
 **Operations:** Docker, Docker Compose, `.env` configuration
 
@@ -318,7 +320,7 @@ The first end-to-end batch also exposed a functional gap: metrics already calcul
 
 - Replace manual batches with invoice webhooks
 - Add a customer payment portal
-- Move SQLite to Postgres for production scale
+- Add migrations and connection pooling controls for production Neon workloads
 - Add multi-agent cross-verification for high-value invoices
 - Add real email/SMS sandbox integrations with approval gates
 

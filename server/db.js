@@ -28,6 +28,7 @@ const statements = {
   invoices: db.prepare('SELECT * FROM invoices ORDER BY risk_score DESC'),
   insertInvoice: db.prepare(`INSERT OR REPLACE INTO invoices (id, customer_id, customer_name, amount, due_date, days_overdue, past_default_count, dnc_flag, status, contact_count, risk_score, bucket) VALUES (@id, @customer_id, @customer_name, @amount, @due_date, @days_overdue, @past_default_count, @dnc_flag, @status, @contact_count, @risk_score, @bucket)`),
   incrementContact: db.prepare('UPDATE invoices SET contact_count = contact_count + 1 WHERE id = ?'),
+    markPaid: db.prepare("UPDATE invoices SET status = 'paid' WHERE id = ? AND status = 'open'"),
   insertAudit: db.prepare('INSERT INTO audit_log (invoice_id, actor, action, reasoning) VALUES (?, ?, ?, ?)'),
   audit: db.prepare('SELECT * FROM audit_log ORDER BY id DESC LIMIT ?'),
   insertPromise: db.prepare('INSERT INTO promises (invoice_id, raw_text, promised_date, confidence) VALUES (?, ?, ?, ?)'),

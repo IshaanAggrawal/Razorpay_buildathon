@@ -25,6 +25,16 @@ router.post('/', (req, res, next) => {
     res.status(201).json({ created: invoice.id });
   } catch (error) { next(error); }
 });
+router.post('/:id/mark-paid', (req, res, next) => {
+  try {
+    const invoice = statements.invoice.get(req.params.id);
+    if (!invoice) return res.status(404).json({ error: `Invoice ${req.params.id} not found` });
+    if (invoice.status !== 'open') return res.status(409).json({ error: `Invoice is already ${invoice.status}` });
+    statements.markPaid.run(invoice.id);
+    statements.insertAudit.run(invoice.id, 'system', 'marked_paid', `Invoice ${invoice.id} for ₹${(invoice.amount / 100).toFixed(2)} marked paid; removed from at-risk pool.`);
+    res.json(statements.invoice.get(invoice.id));
+  } catch (error) { next(error); }
+});
 router.post('/bulk', express.text({ type: '*/*' }), (req, res) => {
   const input = Array.isArray(req.body) ? req.body : parseCsv(req.body || '');
   if (!input.length) return res.status(400).json({ error: 'Upload a non-empty CSV or JSON array' });

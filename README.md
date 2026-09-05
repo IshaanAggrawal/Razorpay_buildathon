@@ -165,6 +165,7 @@ Base URL: `http://localhost:5000`
 |---|---|---|
 | `POST` | `/api/seed/reset` | Clear invoices, promises, and audit rows |
 | `GET` | `/api/invoices` | Return invoice queue |
+| `POST` | `/api/invoices/:id/mark-paid` | Demo-only mark an open invoice paid and remove it from the at-risk pool |
 | `GET` | `/api/invoices/sample` | Return generated CSV |
 | `POST` | `/api/invoices/bulk` | Import CSV text or JSON invoice rows |
 | `POST` | `/api/recover` | Process the batch; optional body `{ "limit": 10 }` |
@@ -265,12 +266,13 @@ Vercel functions do not provide durable local disk storage. The SQLite file may 
 1. Click **Reset demo**.
 2. Click **Load sample**, or use **Upload CSV** with a file containing `id`, `customer_id`, `customer_name`, `amount`, `due_date`, and `days_overdue` columns.
 3. Click **Run recovery**.
-4. Point to a `blocked:dnc` audit row and explain that no model call or contact occurs.
-5. Point to `INV-0007` and explain the `0.42` confidence route to the escalation agent.
-6. Enter `will pay by the 20th` in Promise Simulator.
-7. Use `POST /api/promises/:id/expire` with a later date to demonstrate broken-promise escalation.
-8. Show amount at risk, recovery rate, escalation count, and broken-promise rate.
-9. Click **Export CSV** and open the raw audit trail.
+4. Click **Mark paid** on 2–3 open invoices to show the recovery rate move off 0%.
+5. Point to a `blocked:dnc` audit row and explain that no model call or contact occurs.
+6. Point to `INV-0007` and explain the `0.42` confidence route to the escalation agent.
+7. Enter `will pay by the 20th` in Promise Simulator.
+8. Use `POST /api/promises/:id/expire` with a later date to demonstrate broken-promise escalation.
+9. Show amount at risk, recovery rate, escalation count, and broken-promise rate.
+10. Click **Export CSV** and open the raw audit trail.
 
 ## Tests
 
@@ -285,6 +287,8 @@ The suite verifies bucket boundaries, the risk formula, DNC blocking, cost-floor
 ## What Broke and How We Fixed It
 
 During the first deterministic test pass, the expected risk score was written as `300` for a case whose aging and repeat-default multipliers actually produce `400`. The failing test exposed the mismatch before any API or model code existed. The assertion was corrected to the specified formula, preserving the deterministic core as an independently testable control layer.
+
+The first end-to-end batch also exposed a functional gap: metrics already calculated `amountRecovered` and `recoveryRate` from invoices with `status = 'paid'`, but no route or UI action could ever move an open invoice into that state. Recovery was therefore permanently reported as 0%. We added the demo-only `POST /api/invoices/:id/mark-paid` flow, audit logging, a per-row **Mark paid** button, and a regression test proving that paid amounts and recovery rate update while disputed or already-paid invoices are rejected.
 
 ## Tech Stack
 

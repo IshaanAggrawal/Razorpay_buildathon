@@ -1,7 +1,8 @@
 const Database = require('better-sqlite3');
 const path = require('node:path');
 
-const db = new Database(path.join(__dirname, 'recovery.sqlite'));
+const databasePath = process.env.VERCEL ? '/tmp/recovery.sqlite' : path.join(__dirname, 'recovery.sqlite');
+const db = new Database(databasePath);
 db.pragma('foreign_keys = ON');
 db.exec(`
   CREATE TABLE IF NOT EXISTS invoices (

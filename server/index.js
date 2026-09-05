@@ -6,6 +6,7 @@ require('./db');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.get('/api/health', (req, res) => res.json({ ok: true, storage: process.env.VERCEL ? 'temporary:/tmp' : 'local:sqlite' }));
 app.use('/api/invoices', require('./routes/invoices'));
 app.use('/api/recover', require('./routes/recover'));
 app.use('/api/promises', require('./routes/promises'));

@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './styles.css';
 
 const money = (paise) => `₹${(Number(paise || 0) / 100).toLocaleString('en-IN')}`;
-async function api(path, options) { const response = await fetch(path, { headers: { 'Content-Type': 'application/json' }, ...options }); const body = await response.json(); if (!response.ok) throw new Error(body.error || `Request failed (${response.status})`); return body; }
+async function api(path, options) { const response = await fetch(path, { headers: { 'Content-Type': 'application/json' }, ...options }); const text = await response.text(); let body; try { body = text ? JSON.parse(text) : {}; } catch { body = { error: text || `Request failed (${response.status})` }; } if (!response.ok) throw new Error(body.error || `Request failed (${response.status})`); return body; }
 
 function App() {
   const [invoices, setInvoices] = useState([]); const [audit, setAudit] = useState([]); const [metrics, setMetrics] = useState({}); const [reply, setReply] = useState(''); const [selected, setSelected] = useState(''); const [notice, setNotice] = useState(''); const [busy, setBusy] = useState(false);

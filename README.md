@@ -174,6 +174,7 @@ Base URL: `http://localhost:5000`
 | `GET` | `/api/metrics` | Return risk, recovery, escalation, and promise metrics |
 | `GET` | `/api/audit` | Return recent audit rows |
 | `GET` | `/api/audit/export` | Download audit history as CSV |
+| `GET` | `/api/health` | Confirm the API function and storage mode are running |
 
 ### Example API session
 

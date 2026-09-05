@@ -2,9 +2,10 @@ const PROMISE_SYSTEM_PROMPT = `Extract a payment promise date from the customer'
 
 function parsePromiseDate(text, today = new Date()) {
   const source = String(text).toLowerCase();
+  if (/\b(?:will not|won't|cannot|can't|unable to|no)\s+pay\b/.test(source)) return { date: null, confidence: 0 };
   const explicit = source.match(/\b(20\d{2})[-/](\d{1,2})[-/](\d{1,2})\b/);
   if (explicit) return { date: `${explicit[1]}-${String(explicit[2]).padStart(2, '0')}-${String(explicit[3]).padStart(2, '0')}`, confidence: 0.98 };
-  const day = source.match(/\b(?:by|on) the (\d{1,2})(?:st|nd|rd|th)?\b/);
+  const day = source.match(/\b(?:by|on)\s+(?:the\s+)?(\d{1,2})(?:st|nd|rd|th)?\b/);
   if (!day) return { date: null, confidence: 0 };
   const date = new Date(today);
   date.setDate(Number(day[1]));

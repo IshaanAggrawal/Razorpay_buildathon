@@ -15,6 +15,16 @@ function parseCsv(text) {
 
 router.get('/sample', (req, res) => res.type('text/csv').send(fs.readFileSync(path.join(__dirname, '..', 'data', 'mock_invoices.csv'), 'utf8')));
 router.get('/', (req, res) => res.json(statements.invoices.all()));
+router.post('/', (req, res, next) => {
+  try {
+    const input = [req.body];
+    if (!input[0]?.id) return res.status(400).json({ error: 'id is required' });
+    const invoice = { ...input[0], amount: Number(input[0].amount), days_overdue: Number(input[0].days_overdue || 0), past_default_count: Number(input[0].past_default_count || 0), dnc_flag: Number(input[0].dnc_flag || 0), contact_count: Number(input[0].contact_count || 0), status: input[0].status || 'open' };
+    const aging = calculateAging(invoice);
+    require('../db').statements.insertInvoice.run({ ...invoice, risk_score: aging.riskScore, bucket: aging.bucket });
+    res.status(201).json({ created: invoice.id });
+  } catch (error) { next(error); }
+});
 router.post('/bulk', express.text({ type: '*/*' }), (req, res) => {
   const input = Array.isArray(req.body) ? req.body : parseCsv(req.body || '');
   if (!input.length) return res.status(400).json({ error: 'Upload a non-empty CSV or JSON array' });

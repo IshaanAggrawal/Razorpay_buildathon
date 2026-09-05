@@ -6,6 +6,11 @@ require('./db');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+	const startedAt = Date.now();
+	res.on('finish', () => console.log(`[http] ${req.method} ${req.originalUrl} -> ${res.statusCode} (${Date.now() - startedAt}ms)`));
+	next();
+});
 app.get(['/api/health', '/health'], (req, res) => res.json({ ok: true, storage: process.env.VERCEL ? 'temporary:/tmp' : 'local:sqlite' }));
 app.use(['/api/invoices', '/invoices'], require('./routes/invoices'));
 app.use(['/api/recover', '/recover'], require('./routes/recover'));

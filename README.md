@@ -36,6 +36,10 @@ The dashboard shows the invoice queue, business metrics, promise simulator, and 
 
 > To refresh the screenshot after changing the UI, run the app, open `http://localhost:5000`, import the sample data, and capture the page at desktop width.
 
+## Demo Video
+
+[Watch the demo on YouTube](https://youtu.be/lvAzJXrtsgM)
+
 ## Architecture
 
 ```mermaid

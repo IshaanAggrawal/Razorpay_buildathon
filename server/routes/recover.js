@@ -4,7 +4,8 @@ const { processInvoice } = require('../engine/orchestrator');
 const router = express.Router();
 router.post('/', async (req, res, next) => {
   try {
-    const invoices = req.body?.limit ? statements.invoices.all().slice(0, Number(req.body.limit)) : statements.invoices.all();
+    const allInvoices = await statements.invoices.all();
+    const invoices = req.body?.limit ? allInvoices.slice(0, Number(req.body.limit)) : allInvoices;
     console.log(`[recovery] starting batch of ${invoices.length} invoice(s)`);
     const results = [];
     for (const invoice of invoices) results.push(await processInvoice(invoice));

@@ -9,6 +9,7 @@
     "build": "npm --prefix client run build"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.1",
     "better-sqlite3": "^11.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

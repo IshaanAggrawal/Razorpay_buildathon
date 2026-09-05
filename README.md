@@ -213,6 +213,7 @@ docker compose up --build
 ```
 
 Open `http://localhost:5000`. The built React dashboard and Express API share the same port.
+SQLite is stored in the Docker `recovery-data` volume, so imported invoices and audit data survive container restarts. Use **Reset demo** when you want a clean rehearsal.
 
 ### Option B: Local Node.js
 
@@ -237,7 +238,7 @@ The development dashboard runs at `http://localhost:5173` and proxies API calls 
 
 ### Option C: One-project Vercel deployment
 
-This repository includes `vercel.json` and `api/[...path].js`, so Vercel can deploy the React dashboard and Express API from one GitHub repository.
+This repository includes `vercel.json` and `api/index.js`, so Vercel can deploy the React dashboard and Express API from one GitHub repository.
 
 1. Push the latest `main` branch to GitHub.
 2. Open [Vercel](https://vercel.com/new) and select **Add New Project**.
@@ -246,6 +247,7 @@ This repository includes `vercel.json` and `api/[...path].js`, so Vercel can dep
 5. Add these environment variables in **Settings > Environment Variables**:
 
   ```text
+  DATABASE_URL=your_neon_postgresql_connection_string
   GROQ_API_KEY=your_rotated_groq_key
   DECISION_MODEL=llama-3.1-8b-instant
   ESCALATION_MODEL=llama-3.1-70b-versatile
@@ -257,9 +259,11 @@ This repository includes `vercel.json` and `api/[...path].js`, so Vercel can dep
 
 The dashboard calls `/api/...` on the same Vercel domain, so no frontend API URL needs to be edited. Use **Load sample**, then **Run recovery** to verify the deployment.
 
-#### Vercel limitation for this MVP
+#### Vercel database
 
-Vercel functions do not provide durable local disk storage or guaranteed process memory across instances. On Vercel, this MVP uses a lightweight in-memory adapter so the function can boot without native SQLite; data is temporary and may reset. For persistent hosted data, keep the API contract but replace the adapter with a hosted SQLite-compatible database such as Turso. Use the included Docker deployment locally for durable SQLite demo data. Never commit `.env` or a real API key.
+When `DATABASE_URL` is set, the app uses Neon PostgreSQL for durable storage across Vercel cold starts and function instances. Without it, local development falls back to SQLite. Add the Neon URI only in Vercel's environment settings; never commit it or paste it into the repository.
+
+The first Neon-backed API request automatically creates all three tables. The equivalent SQL is also available in `server/neon-schema.sql` if you prefer to create them manually in the Neon SQL Editor.
 
 ## Demo Script
 

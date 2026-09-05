@@ -38,6 +38,16 @@
 .check-label input { width: 15px; height: 15px; }
 .nav-button { display: inline-flex; align-items: center; min-height: 42px; text-decoration: none; }
 .upload-button { display: inline-flex; align-items: center; }
+.batch-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+.batch-summary div { padding: 14px 16px; background: #f8faf6; border: 1px solid #cbd8ca; border-radius: 5px; }
+.batch-summary span, .batch-summary strong { display: block; }
+.batch-summary span { color: #667269; font-size: 11px; }
+.batch-summary strong { margin-top: 6px; color: #173f2a; font-size: 22px; }
+.notice { display: flex; align-items: center; gap: 9px; }
+.notice-running { background: #e7f0e3; }
+.spinner { display: inline-block; animation: pulse 1s ease-in-out infinite; font-size: 18px; }
+@keyframes pulse { 50% { opacity: .35; } }
+@media (max-width: 700px) { .batch-summary { grid-template-columns: repeat(2, 1fr); } }
 .docs-route .docs-backdrop { position: static; min-height: 100vh; padding: 0; display: block; background: transparent; }
 .docs-route .docs-modal { width: 100%; max-height: none; min-height: 100vh; border: 0; border-radius: 0; box-shadow: none; }
 .docs-route .docs-content { max-height: none; min-height: calc(100vh - 145px); }

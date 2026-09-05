@@ -5,7 +5,7 @@
   "outputDirectory": "client/dist",
   "functions": {
     "api/**/*.js": {
-      "includeFiles": ["server/**"]
+      "includeFiles": "server/**"
     }
   },
   "rewrites": [

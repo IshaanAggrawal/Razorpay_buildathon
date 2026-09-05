@@ -233,6 +233,32 @@ npm run dev
 
 The development dashboard runs at `http://localhost:5173` and proxies API calls to port 5000.
 
+### Option C: One-project Vercel deployment
+
+This repository includes `vercel.json` and `api/index.js`, so Vercel can deploy the React dashboard and Express API from one GitHub repository.
+
+1. Push the latest `main` branch to GitHub.
+2. Open [Vercel](https://vercel.com/new) and select **Add New Project**.
+3. Import `IshaanAggrawal/Razorpay_buildathon`.
+4. Keep the framework preset as **Other**. Vercel will use the repository's `vercel.json`.
+5. Add these environment variables in **Settings > Environment Variables**:
+
+  ```text
+  GROQ_API_KEY=your_rotated_groq_key
+  DECISION_MODEL=llama-3.1-8b-instant
+  ESCALATION_MODEL=llama-3.1-70b-versatile
+  PROMISE_MODEL=llama-3.1-8b-instant
+  PORT=5000
+  ```
+
+6. Click **Deploy**, then open the generated Vercel URL.
+
+The dashboard calls `/api/...` on the same Vercel domain, so no frontend API URL needs to be edited. Use **Load sample**, then **Run recovery** to verify the deployment.
+
+#### Vercel limitation for this MVP
+
+Vercel functions do not provide durable local disk storage. The SQLite file may reset between deployments or function instances, so this deployment is suitable for a visual/demo preview, not persistent production data. For a reliable hosted demo, keep the same API contract but replace `better-sqlite3` with a hosted SQLite-compatible database such as Turso, or use the included Docker deployment locally. Never commit `.env` or a real API key.
+
 ## Demo Script
 
 1. Click **Reset demo**.

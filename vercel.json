@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "installCommand": "npm install && npm --prefix client install",
+  "outputDirectory": "client/dist",
+  "functions": {
+    "api/**/*.js": {
+      "includeFiles": ["server/**"]
+    }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

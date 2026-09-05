@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node server/index.js",
     "test": "node --test server/tests/*.test.js",
-    "generate:data": "node server/data/generate.js"
+    "generate:data": "node server/data/generate.js",
+    "build": "npm --prefix client run build"
   },
   "dependencies": {
     "better-sqlite3": "^11.8.1",

@@ -7,7 +7,7 @@ async function api(path, options) { const response = await fetch(path, { headers
 
 function App() {
   const [invoices, setInvoices] = useState([]); const [audit, setAudit] = useState([]); const [metrics, setMetrics] = useState({}); const [reply, setReply] = useState(''); const [selected, setSelected] = useState(''); const [notice, setNotice] = useState(''); const [busy, setBusy] = useState(false);
-  const refresh = async () => { try { const [nextInvoices, nextAudit, nextMetrics] = await Promise.all([api('/api/invoices'), api('/api/audit'), api('/api/metrics')]); setInvoices(nextInvoices); setSelected((current) => current || nextInvoices[0]?.id || ''); setAudit(nextAudit); setMetrics(nextMetrics); } catch (error) { setNotice(`Backend unavailable. Start the API on port 5000. ${error.message}`); } };
+  const refresh = async () => { try { const [nextInvoices, nextAudit, nextMetrics] = await Promise.all([api('/api/invoices'), api('/api/audit'), api('/api/metrics')]); if (!Array.isArray(nextInvoices)) throw new Error('API returned invalid invoice data. Check the Vercel function routing.'); setInvoices(nextInvoices); setSelected((current) => current || nextInvoices[0]?.id || ''); setAudit(Array.isArray(nextAudit) ? nextAudit : []); setMetrics(nextMetrics && typeof nextMetrics === 'object' ? nextMetrics : {}); } catch (error) { setNotice(`Backend unavailable. ${error.message}`); } };
   useEffect(() => { refresh(); }, []);
   const run = async (operation, success) => { setBusy(true); try { await operation(); setNotice(success); await refresh(); } catch (error) { setNotice(error.message); } finally { setBusy(false); } };
   const reset = () => run(() => api('/api/seed/reset', { method: 'POST' }), 'Database reset. Import the CSV to begin.');

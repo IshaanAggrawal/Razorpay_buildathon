@@ -4,11 +4,12 @@
   "installCommand": "npm install && npm --prefix client install",
   "outputDirectory": "client/dist",
   "functions": {
-    "api/[...path].js": {
+    "api/index.js": {
       "includeFiles": "server/**"
     }
   },
   "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/index.js" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

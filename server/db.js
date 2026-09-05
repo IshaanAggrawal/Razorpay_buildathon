@@ -1,10 +1,7 @@
-if (process.env.VERCEL) {
-  module.exports = require('./db-memory');
-} else {
 const Database = require('better-sqlite3');
 const path = require('node:path');
 
-const databasePath = process.env.VERCEL ? '/tmp/recovery.sqlite' : path.join(__dirname, 'recovery.sqlite');
+const databasePath = path.join(__dirname, 'recovery.sqlite');
 const db = new Database(databasePath);
 db.pragma('foreign_keys = ON');
 db.exec(`
@@ -45,4 +42,3 @@ function reset() {
 }
 
 module.exports = { db, statements, reset };
-}
